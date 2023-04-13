@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">peloton_test</string>
+    <string name="no_items_found">No items found or server not available</string>
+</resources>
