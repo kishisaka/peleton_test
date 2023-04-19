@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit
 
 class ItemDao {
     private var itemService: ItemService
+
     companion object {
         const val HTTP_OK = 200
         const val URL = "https://jsonplaceholder.typicode.com/"
