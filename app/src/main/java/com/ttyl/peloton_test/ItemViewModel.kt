@@ -13,9 +13,12 @@ class ItemViewModel: ViewModel() {
     }
 
     fun getData() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val callBack = ItemCallback(_itemDoneState)
-            dao.getItems(callBack)
+        // only fire this if we currently don't have data from last session!
+        if (_itemDoneState.value == null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val callBack = ItemCallback(_itemDoneState)
+                dao.getItems(callBack)
+            }
         }
     }
 

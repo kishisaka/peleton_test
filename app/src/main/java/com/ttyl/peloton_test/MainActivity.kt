@@ -1,19 +1,16 @@
 package com.ttyl.peloton_test
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ttyl.peloton_test.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
 
 class MainActivity : AppCompatActivity(), ViewContract {
     private lateinit var binding: ActivityMainBinding
@@ -24,19 +21,6 @@ class MainActivity : AppCompatActivity(), ViewContract {
     private val adapter: ItemAdapter = ItemAdapter()
     private lateinit var editText: EditText
     private lateinit var button: Button
-
-    // observe when items are available in view model
-    // set the data into the adapter when we have items
-    val itemDoneObserver = Observer<Array<Item>> {
-        adapter.items = it
-        adapter.notifyDataSetChanged()
-        if (it.isEmpty()) {
-            showEmptyList()
-        } else {
-            hideEmptyList()
-        }
-        dismissProgressBar()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,24 +36,20 @@ class MainActivity : AppCompatActivity(), ViewContract {
         recycler.adapter = adapter
 
         // create instance of view model
-        val itemViewModel = ViewModelProvider(this).get(ItemViewModel::class.java)
-        // set observer to view model
-        itemViewModel.itemDoneState.observe(this, itemDoneObserver)
+        val itemViewModel = ViewModelProvider(this)[(ItemViewModel::class.java)]
+        val presenter = ItemPresenter(this, itemViewModel)
 
-        //get initial data
-        showProgressBar()
-        hideEmptyList()
-        itemViewModel.getData()
+        // set observer to view model
+        itemViewModel.itemDoneState.observe(this) { t ->
+            presenter.showData(t)
+        }
 
         button.setOnClickListener(object: View.OnClickListener {
             override fun onClick(v: View?) {
-                Integer.parseInt(editText.text.toString()).let {
-                    showProgressBar()
-                    hideEmptyList()
-                    itemViewModel.getDataById(it)
-                }
+                presenter.getDataById(editText.text.toString())
             }
         })
+        itemViewModel.getData()
     }
 
     override fun updateAdapter(items: Array<Item>) {

@@ -6,11 +6,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ItemCallback(val itemDoneState: MutableLiveData<Array<Item>>): Callback<Array<Item>> {
+class ItemCallback(private val itemDoneState: MutableLiveData<Array<Item>>): Callback<Array<Item>> {
 
     override fun onResponse(call: Call<Array<Item>>, response: Response<Array<Item>>) {
         response.body()?.let {
-            println("count: ${it.size}")
             itemDoneState.value = response.body()
         }
     }
